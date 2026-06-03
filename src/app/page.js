@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState, Suspense } from "react";
+import { useContext, useEffect, useState, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { login, validateToken, validateAccessToken, requestPassword } from "@/api/tickets";
 import { alertContext } from "@/hooks/alertContext";
@@ -16,91 +16,79 @@ function LoginView() {
   const [isLoading, setIsLoading] = useState(false);
   const [isForgotPwd, setIsForgotPwd] = useState(false);
 
+  // 👇 NEW: prevent repeated SSO validation when params stay in URL
+  const ssoProcessed = useRef(false);
+
+  // Initial token validation (existing behavior)
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) validateToken().then(() => router.push("/my-tickets")).catch(() => localStorage.removeItem("auth_token"));
   }, []);
 
- useEffect(() => {
-  if (typeof window === "undefined") return;
+  // SSO auto-login handler (modified)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  const host = window.location.host;
+    const host = window.location.host;
+    // same exclusion as V2
+    if (host === "localhost:3000" || host === "36.255.70.9:3002") {
+      return;
+    }
 
-  // same exclusion as V2
-  if (
-    host === "localhost:3000" ||
-    host === "http://36.255.70.9:3002/"
-  ) {
-    return;
-  }
+    // 🛡️ Guard: only process SSO once
+    if (ssoProcessed.current) return;
 
-  const tkey = searchParams.get("tkey");
-  const tvalue = searchParams.get("tvalue");
-  const origin = searchParams.get("origin");
-  const auth_token = searchParams.get("auth_token");
+    const tkey = searchParams.get("tkey");
+    const tvalue = searchParams.get("tvalue");
+    const origin = searchParams.get("origin");
+    const auth_token = searchParams.get("auth_token");
 
-  // --------------------------------------------------
-  // 🔴 V2 BEHAVIOR: HARD GATE (IMPORTANT FIX)
-  // If NO valid SSO params → ALWAYS redirect away
-  // --------------------------------------------------
-  if (!tkey || !tvalue) {
-    window.open(
-      "https://intercloud.com.bd/support",
-      "_self"
-    );
-    return;
-  }
+    // No SSO params -> redirect external
+    if (!tkey || !tvalue) {
+      window.open("https://intercloud.com.bd/support", "_self");
+      return;
+    }
 
-  setIsLoading(true);
+    // Mark as processed immediately to avoid re-runs (even before API resolves)
+    ssoProcessed.current = true;
+    setIsLoading(true);
 
-  validateAccessToken(tkey, tvalue)
-    .then(() => {
-      if (!auth_token) {
-        window.open(
-          "https://intercloud.com.bd/support",
-          "_self"
-        );
-        return;
-      }
+    validateAccessToken(tkey, tvalue)
+      .then(() => {
+        // ✅ CASE: tkey + tvalue valid, but NO auth_token
+        if (!auth_token) {
+          // Do nothing – just stay on page, keep URL unchanged, show login form
+          return;
+        }
 
-      localStorage.setItem("auth_token", auth_token);
+        // ✅ CASE: full SSO with auth_token present
+        localStorage.setItem("auth_token", auth_token);
+        validateToken()
+          .then(() => {
+            router.push("/my-tickets");
+          })
+          .catch(() => {
+            localStorage.removeItem("auth_token");
+            // original failure redirects
+            if (origin === "pbx") {
+              window.open("https://pbx.brilliant.com.bd/", "_self");
+            } else if (origin === "sms") {
+              window.open("https://sms.brilliant.com.bd/", "_self");
+            } else {
+              window.open("https://intercloud.com.bd/support", "_self");
+            }
+          });
+      })
+      .catch(() => {
+        // SSO validation failed -> redirect
+        window.open("https://intercloud.com.bd/support", "_self");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [searchParams, router]);
 
-      validateToken()
-        .then(() => {
-          router.push("/my-tickets");
-        })
-        .catch(() => {
-          localStorage.removeItem("auth_token");
-
-          if (origin === "pbx") {
-            window.open(
-              "https://pbx.brilliant.com.bd/",
-              "_self"
-            );
-          } else if (origin === "sms") {
-            window.open(
-              "https://sms.brilliant.com.bd/",
-              "_self"
-            );
-          } else {
-            window.open(
-              "https://intercloud.com.bd/support",
-              "_self"
-            );
-          }
-        });
-    })
-    .catch(() => {
-      window.open(
-        "https://intercloud.com.bd/support",
-        "_self"
-      );
-    })
-    .finally(() => {
-      setIsLoading(false);
-    });
-}, [searchParams, router]);
-
+  // Enter key handler (unchanged)
   useEffect(() => {
     const h = (e) => { if (e.key === "Enter") { if (isForgotPwd) handleRequestPassword(); else handleLogin(); } };
     document.addEventListener("keydown", h);
