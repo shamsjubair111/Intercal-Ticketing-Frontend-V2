@@ -185,11 +185,13 @@ export default function Sidebar({ onNavigate }) {
             Folders
           </h3>
           <div className="space-y-2">
-            <Item
-              label="Trash"
-              active={active("trash")}
-              onClick={() => go("/trash")}
-            />
+            {userType !== "client" && (
+              <Item
+                label="Trash"
+                active={active("trash")}
+                onClick={() => go("/trash")}
+              />
+            )}
             {canSeePermaDeleted && (
               <Item
                 label="Permanently Deleted"
