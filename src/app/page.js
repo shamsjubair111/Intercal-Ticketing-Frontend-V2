@@ -21,19 +21,85 @@ function LoginView() {
     if (token) validateToken().then(() => router.push("/my-tickets")).catch(() => localStorage.removeItem("auth_token"));
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.location.host === "localhost:3000" || window.location.host === "staging-ticketing.brilliant.com.bd") return;
-    const tkey = searchParams.get("tkey"), tvalue = searchParams.get("tvalue"), origin = searchParams.get("origin"), auth_token = searchParams.get("auth_token");
-    if (!tkey && !tvalue && !origin) return;
-    if (tkey && tvalue) {
-      setIsLoading(true);
-      validateAccessToken(tkey, tvalue)
-        .then(() => { if (auth_token) { localStorage.setItem("auth_token", auth_token); validateToken().then(() => router.push("/my-tickets")).catch(() => { localStorage.removeItem("auth_token"); if (origin === "pbx") window.open("https://pbx.brilliant.com.bd/","_self"); else if (origin === "sms") window.open("https://sms.brilliant.com.bd/","_self"); }); } })
-        .catch(() => window.open("https://intercloud.com.bd/support","_self"))
-        .finally(() => setIsLoading(false));
-    } else window.open("https://intercloud.com.bd/support","_self");
-  }, []);
+ useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const host = window.location.host;
+
+  // same exclusion as V2
+  if (
+    host === "localhost:3000" ||
+    host === "http://36.255.70.9:3002/"
+  ) {
+    return;
+  }
+
+  const tkey = searchParams.get("tkey");
+  const tvalue = searchParams.get("tvalue");
+  const origin = searchParams.get("origin");
+  const auth_token = searchParams.get("auth_token");
+
+  // --------------------------------------------------
+  // 🔴 V2 BEHAVIOR: HARD GATE (IMPORTANT FIX)
+  // If NO valid SSO params → ALWAYS redirect away
+  // --------------------------------------------------
+  if (!tkey || !tvalue) {
+    window.open(
+      "https://intercloud.com.bd/support",
+      "_self"
+    );
+    return;
+  }
+
+  setIsLoading(true);
+
+  validateAccessToken(tkey, tvalue)
+    .then(() => {
+      if (!auth_token) {
+        window.open(
+          "https://intercloud.com.bd/support",
+          "_self"
+        );
+        return;
+      }
+
+      localStorage.setItem("auth_token", auth_token);
+
+      validateToken()
+        .then(() => {
+          router.push("/my-tickets");
+        })
+        .catch(() => {
+          localStorage.removeItem("auth_token");
+
+          if (origin === "pbx") {
+            window.open(
+              "https://pbx.brilliant.com.bd/",
+              "_self"
+            );
+          } else if (origin === "sms") {
+            window.open(
+              "https://sms.brilliant.com.bd/",
+              "_self"
+            );
+          } else {
+            window.open(
+              "https://intercloud.com.bd/support",
+              "_self"
+            );
+          }
+        });
+    })
+    .catch(() => {
+      window.open(
+        "https://intercloud.com.bd/support",
+        "_self"
+      );
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+}, [searchParams, router]);
 
   useEffect(() => {
     const h = (e) => { if (e.key === "Enter") { if (isForgotPwd) handleRequestPassword(); else handleLogin(); } };
