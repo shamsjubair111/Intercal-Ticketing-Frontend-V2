@@ -833,6 +833,14 @@ export default function TicketDetailsPage() {
                     </div>
                   )}
               </div>
+              {ticket?.drop_history?.length > 0 && (
+                <button
+                  onClick={() => setModal("drophistory")}
+                  className="mt-3 w-full cursor-pointer text-left px-3 py-2 text-sm font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded hover:bg-orange-100 transition-colors"
+                >
+                  Drop History
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -1006,6 +1014,46 @@ export default function TicketDetailsPage() {
                 </p>
                 <hr className="mb-2" />
                 <p className="text-sm text-gray-700">{r.root_cause_analysis}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end border-t px-5 py-3">
+            <button
+              onClick={() => setModal(null)}
+              className="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700"
+            >
+              Close
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {modal === "drophistory" && (
+        <Modal title="Drop History" onClose={() => setModal(null)}>
+          <div className="px-5 py-4 max-h-80 overflow-y-auto flex flex-col gap-3">
+            {(ticket?.drop_history || []).map((d, i) => (
+              <div
+                key={i}
+                className="border border-gray-200 rounded p-3 shadow-sm"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-semibold text-gray-800">
+                    {d.dropper_name}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    {d.dropper_username}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 mb-2">
+                  {d.dropped_at
+                    ? date.format(new Date(d.dropped_at), pattern)
+                    : "—"}
+                </p>
+                <hr className="mb-2" />
+                <p className="text-sm text-gray-700">
+                  <span className="font-medium text-gray-500">Reason: </span>
+                  {d.drop_cause || "—"}
+                </p>
               </div>
             ))}
           </div>
