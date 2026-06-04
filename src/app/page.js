@@ -31,7 +31,7 @@ function LoginView() {
 
     const host = window.location.host;
     // same exclusion as V2
-    if (host === "localhost:3000" || host === "36.255.70.9:3002") {
+    if (host === "localhost:3000") {
       return;
     }
 
