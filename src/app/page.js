@@ -38,8 +38,8 @@ function LoginView() {
     // 🛡️ Guard: only process SSO once
     if (ssoProcessed.current) return;
 
-    const tkey = searchParams.get("tkey");
-    const tvalue = searchParams.get("tvalue");
+    const tkey = searchParams.get("tkey") || "";
+const tvalue = searchParams.get("tvalue") || "";
     const origin = searchParams.get("origin");
     const auth_token = searchParams.get("auth_token");
 
