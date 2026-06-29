@@ -31,7 +31,7 @@ function LoginView() {
 
     const host = window.location.host;
     // same exclusion as V2
-    if (host === "localhost:3000") {
+    if (host === "localhost:3000" || host === "staging-ticketing.brilliant.com.bd") {
       return;
     }
 
