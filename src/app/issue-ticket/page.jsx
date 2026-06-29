@@ -215,13 +215,14 @@ export default function IssueTicketPage() {
         });
         router.push("/my-tickets");
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to issue ticket.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setBtnLoading(false));
   };
 

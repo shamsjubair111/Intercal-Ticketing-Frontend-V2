@@ -109,7 +109,14 @@ const tvalue = searchParams.get("tvalue") || "";
     setButtonLoader(true);
     requestPassword(username)
       .then(() => { setAlertCtx({ title: "Success!", message: "A reset email was sent.", type: "success" }); setIsForgotPwd(false); setUsername(""); })
-      .catch(() => setAlertCtx({ title: "Failed!", message: "An error occurred. Please try again.", type: "error" }))
+      .catch((err) => {
+        console.log(err);
+        setAlertCtx({
+          title: "Error",
+          message: err?.response?.data?.message,
+          type: "error",
+        });
+      })
       .finally(() => setButtonLoader(false));
   };
 

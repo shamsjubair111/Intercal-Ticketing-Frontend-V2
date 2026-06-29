@@ -42,13 +42,14 @@ function ChangePasswordModal({ onClose }) {
         });
         onClose();
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed. Check your current password.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 

@@ -44,13 +44,14 @@ function View() {
         });
         router.push("/");
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
-          title: "Failed!",
-          message: "Invalid code or username.",
+          title: "Error",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 

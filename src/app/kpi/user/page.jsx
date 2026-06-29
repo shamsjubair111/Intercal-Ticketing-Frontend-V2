@@ -28,13 +28,14 @@ export default function UserKpiPage() {
     setResult(null);
     getUserSummaryByDateRange(username, start || undefined, end || undefined)
       .then((r) => setResult(r.data))
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to generate report.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 

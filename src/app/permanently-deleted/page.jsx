@@ -29,10 +29,10 @@ function PermanentlyDeletedPage() {
       const res = await getPermanentlyDeletedTickets(pageNo);
       setTickets(res?.data?.data || []);
       setTotalTickets(res?.data?.total_tickets || 0);
-    } catch {
+    } catch (err) {
       setAlertCtx({
         title: "Error",
-        message: "Failed to load permanently deleted tickets!",
+        message: err?.response?.data?.message,
         type: "error",
       });
     } finally {

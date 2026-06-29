@@ -121,13 +121,14 @@ export default function TicketDetailsPage() {
         setUserData(ud);
         setUserType(ud.user_type);
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to load ticket.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 
@@ -194,13 +195,14 @@ export default function TicketDetailsPage() {
           });
         }
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to add comment.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setCommentLoading(false));
   };
 
@@ -228,13 +230,13 @@ export default function TicketDetailsPage() {
         setModal(null);
         fetchData();
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to pick ticket.",
+          message: err?.response?.data?.message,
           type: "error",
         });
-        setModal(null);
       })
       .finally(() => setActionLoading(false));
   };
@@ -266,13 +268,13 @@ export default function TicketDetailsPage() {
         setDropCause("");
         fetchData();
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to drop ticket.",
+          message: err?.response?.data?.message,
           type: "error",
         });
-        setModal(null);
       })
       .finally(() => setActionLoading(false));
   };
@@ -309,13 +311,13 @@ export default function TicketDetailsPage() {
         setModal(null);
         router.push("/my-tickets");
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Forwarding failed.",
+          message: err?.response?.data?.message,
           type: "error",
         });
-        setModal(null);
       })
       .finally(() => setActionLoading(false));
   };
@@ -345,13 +347,13 @@ export default function TicketDetailsPage() {
         setModal(null);
         fetchData();
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to resolve.",
+          message: err?.response?.data?.message,
           type: "error",
         });
-        setModal(null);
       })
       .finally(() => setActionLoading(false));
   };
@@ -394,10 +396,10 @@ export default function TicketDetailsPage() {
             setModal(null);
             fetchData();
           })
-          .catch(() => {
+          .catch((err) => {
             setAlertCtx({
               title: "Error",
-              message: "Root cause saved but resolve failed.",
+              message: err?.response?.data?.message,
               type: "error",
             });
             setModal(null);
@@ -405,10 +407,10 @@ export default function TicketDetailsPage() {
           })
           .finally(() => setActionLoading(false));
       })
-      .catch(() => {
+      .catch((err) => {
         setAlertCtx({
           title: "Error",
-          message: "Failed to save root cause.",
+          message: err?.response?.data?.message,
           type: "error",
         });
         setActionLoading(false);
@@ -435,13 +437,13 @@ export default function TicketDetailsPage() {
         setModal(null);
         fetchData();
       })
-      .catch(() =>
+      .catch((err) => {
         setAlertCtx({
           title: "Error",
-          message: "Update failed.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setActionLoading(false));
   };
 

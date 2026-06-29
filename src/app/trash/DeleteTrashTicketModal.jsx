@@ -27,9 +27,7 @@ export default function DeleteTrashTicketModal({
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message:
-          err?.response?.data?.message ||
-          "Failed to delete ticket permanently.",
+        message: err?.response?.data?.message,
         type: "error",
       });
     }

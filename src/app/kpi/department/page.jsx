@@ -56,13 +56,14 @@ export default function DeptKpiPage() {
           });
         }
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to generate report.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 
@@ -108,7 +109,7 @@ export default function DeptKpiPage() {
               onChange={(e) => setTeam(e.target.value)}
               className={S}
             >
-              <option value="">All Teams</option>
+              <option value="">Select team</option>
               {TEAMS.map((t) => (
                 <option key={t.value} value={t.value}>
                   {t.label}

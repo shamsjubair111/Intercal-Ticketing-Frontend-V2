@@ -27,13 +27,14 @@ export default function TrashTicketDetails() {
   useEffect(() => {
     getTicketById(ticket_id)
       .then((res) => setTicket(res?.data?.data?.[0] || null))
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to load ticket",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   }, [ticket_id]);
 
@@ -49,7 +50,7 @@ export default function TrashTicketDetails() {
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message: err?.response?.data?.message || "Restore failed",
+        message: err?.response?.data?.message,
         type: "error",
       });
     }
@@ -69,7 +70,7 @@ export default function TrashTicketDetails() {
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message: err?.response?.data?.message || "Delete failed",
+        message: err?.response?.data?.message,
         type: "error",
       });
     }

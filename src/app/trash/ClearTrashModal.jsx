@@ -23,7 +23,7 @@ export default function ClearTrashModal({ open, onClose, onSuccess }) {
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message: err?.response?.data?.message || "Failed to clear trash.",
+        message: err?.response?.data?.message,
         type: "error",
       });
     }

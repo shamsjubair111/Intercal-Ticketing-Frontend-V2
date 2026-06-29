@@ -61,8 +61,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message:
-          err?.response?.data?.message || "Failed to move ticket to trash.",
+        message: err?.response?.data?.message,
         type: "error",
       });
     } finally {
@@ -97,7 +96,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message: err?.response?.data?.message || "Failed to pick ticket.",
+        message: err?.response?.data?.message,
         type: "error",
       });
     } finally {
@@ -134,7 +133,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
     } catch (err) {
       setAlertCtx({
         title: "Error",
-        message: err?.response?.data?.message || "Failed to drop ticket.",
+        message: err?.response?.data?.message,
         type: "error",
       });
     } finally {
@@ -239,11 +238,8 @@ export default function Table({ data = [], loading, columns, reload, page }) {
         </div>
       )}
 
-      <div
-        className="w-full bg-white rounded-sm border border-gray-200"
-        style={{ overflowX: "scroll" }}
-      >
-        <table className="w-full">
+      <div className="w-full bg-white rounded-sm border border-gray-200 overflow-x-auto">
+        <table className="w-full min-w-max table-fixed">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50">
               <th className="w-12 px-4 py-3">
@@ -257,7 +253,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
               {columns.map((col) => (
                 <th
                   key={col.label}
-                  className="px-4 py-3 text-left text-sm font-medium text-gray-600"
+                  className={`px-4 py-3 text-left text-sm font-medium text-gray-600 whitespace-nowrap ${col.className || ""}`}
                 >
                   {col.label}
                   {col.label === "LAST MESSAGE" && (
@@ -266,7 +262,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
                 </th>
               ))}
               {canSeeActions && (
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600 whitespace-nowrap min-w-[180px]">
                   ACTION
                 </th>
               )}
@@ -293,7 +289,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
                     onClick={() => router.push(`/tickets/${row.ticket_id}`)}
                     className="border-b border-gray-200 cursor-pointer hover:bg-blue-50 transition"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 align-middle">
                       <input
                         type="checkbox"
                         checked={selectedRows.has(row.ticket_id)}
@@ -303,12 +299,15 @@ export default function Table({ data = [], loading, columns, reload, page }) {
                       />
                     </td>
                     {columns.map((col) => (
-                      <td key={col.value} className="px-4 py-3">
+                      <td
+                        key={col.value}
+                        className={`px-4 py-3 align-middle ${col.className || ""}`}
+                      >
                         {col.render ? col.render(row) : row[col.value]}
                       </td>
                     ))}
                     {canSeeActions && (
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 align-middle">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={(e) => {
@@ -326,7 +325,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
                                 e.stopPropagation();
                                 setPickRow(row);
                               }}
-                              className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded hover:bg-green-700 transition-colors"
+                              className="px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded hover:bg-green-700 transition-colors whitespace-nowrap"
                             >
                               Pick
                             </button>
@@ -338,7 +337,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
                                 setDropRow(row);
                                 setDropCause("");
                               }}
-                              className="px-3 py-1 text-xs font-semibold text-white bg-orange-600 rounded hover:bg-orange-700 transition-colors"
+                              className="px-3 py-1 text-xs font-semibold text-white bg-orange-600 rounded hover:bg-orange-700 transition-colors whitespace-nowrap"
                             >
                               Drop
                             </button>

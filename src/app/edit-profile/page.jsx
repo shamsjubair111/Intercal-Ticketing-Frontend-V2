@@ -116,13 +116,14 @@ export default function EditProfilePage() {
           type: "success",
         }),
       )
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Update failed.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setSaving(false));
   };
 
@@ -139,13 +140,14 @@ export default function EditProfilePage() {
           type: "success",
         }),
       )
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Update failed.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setCompanyLoaders((p) => ({ ...p, [cId]: false })));
   };
 

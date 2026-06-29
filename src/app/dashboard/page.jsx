@@ -67,13 +67,14 @@ export default function DashboardPage() {
         });
         setUserType(u.data.data[0].user_type);
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to load dashboard.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   }, []);
 

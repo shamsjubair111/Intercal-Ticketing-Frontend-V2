@@ -46,13 +46,14 @@ export default function TopicsPage() {
     setLoading(true);
     getTopics()
       .then((r) => setTopics(r.data.topics || []))
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to load topics.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setLoading(false));
   };
 
@@ -74,13 +75,14 @@ export default function TopicsPage() {
         setAddService("");
         fetchTopics();
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to add topic.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setAddLoading(false));
   };
 
@@ -97,13 +99,14 @@ export default function TopicsPage() {
         setEditRow(null);
         fetchTopics();
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to update topic.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setEditLoading(false));
   };
 
@@ -120,13 +123,14 @@ export default function TopicsPage() {
         setDeleteId(null);
         fetchTopics();
       })
-      .catch(() =>
+      .catch((err) => {
+        console.log(err);
         setAlertCtx({
           title: "Error",
-          message: "Failed to delete topic.",
+          message: err?.response?.data?.message,
           type: "error",
-        }),
-      )
+        });
+      })
       .finally(() => setDeleteLoading(false));
   };
 
