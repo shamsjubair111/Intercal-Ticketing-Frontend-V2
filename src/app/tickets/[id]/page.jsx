@@ -60,9 +60,11 @@ const PRIORITY_COLORS = {
 
 function InfoRow({ label, value }) {
   return (
-    <div className="text-sm">
+    <div className="text-base break-words">
       <span className="font-semibold text-gray-700">{label}: </span>
-      <span className="font-light text-gray-600">{value || "—"}</span>
+      <span className="font-light text-gray-600 break-words">
+        {value || "—"}
+      </span>
     </div>
   );
 }
@@ -479,18 +481,18 @@ export default function TicketDetailsPage() {
           {/* Ticket info card */}
           <div className="bg-white rounded-sm border border-gray-200 p-5">
             <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">
+              <div className="min-w-0 break-words">
+                <h2 className="text-2xl font-bold text-gray-800 break-words">
                   {ticket?.title}
                 </h2>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-sm text-gray-400 mt-1">
                   {ticket?.created_at
                     ? date.format(new Date(ticket.created_at), pattern)
                     : ""}
                 </p>
               </div>
               <span
-                className={`text-sm font-semibold ${STATUS_COLORS[ticket?.status] || "text-gray-600"}`}
+                className={`text-base font-semibold ${STATUS_COLORS[ticket?.status] || "text-gray-600"}`}
               >
                 {ticket?.status?.toUpperCase()}
               </span>
@@ -571,14 +573,14 @@ export default function TicketDetailsPage() {
               <ShowAttachments attachments={ticket.attachments} />
             )}
             <div
-              className="prose prose-sm max-w-none text-sm"
+              className="prose prose-base max-w-none text-base break-words [overflow-wrap:anywhere]"
               dangerouslySetInnerHTML={safe(ticket?.description)}
             />
           </div>
 
           {/* Reply */}
           <div className="bg-white rounded-sm border border-gray-200 p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+            <h3 className="text-base font-semibold text-gray-700 mb-3">
               Add Reply
             </h3>
             <div className="mb-14 border border-gray-200 rounded overflow-hidden">
@@ -663,10 +665,10 @@ export default function TicketDetailsPage() {
               !(userType === "client" && t.is_internal) && (
                 <div
                   key={i}
-                  className={`rounded-sm border border-gray-200 p-4 ${t.commenter_user_type === "client" ? "bg-teal-50" : "bg-white"}`}
+                  className={`rounded-sm border border-gray-200 p-4 min-w-0 overflow-hidden ${t.commenter_user_type === "client" ? "bg-teal-50" : "bg-white"}`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-sm text-gray-800">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="font-semibold text-base text-gray-800 break-words">
                       {t.commenter_name}
                     </span>
                     {t.is_internal && (
@@ -675,7 +677,7 @@ export default function TicketDetailsPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 mb-2">
+                  <p className="text-sm text-gray-400 mb-2">
                     {date.format(new Date(t.created_at), pattern)}
                   </p>
                   <hr className="mb-2" />
@@ -683,7 +685,7 @@ export default function TicketDetailsPage() {
                     <ShowAttachments attachments={t.attachments} />
                   )}
                   <div
-                    className="prose prose-sm max-w-none text-sm"
+                    className="prose prose-base max-w-none text-base break-words [overflow-wrap:anywhere]"
                     dangerouslySetInnerHTML={safe(t.contents)}
                   />
                 </div>

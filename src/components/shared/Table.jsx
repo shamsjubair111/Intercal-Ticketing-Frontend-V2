@@ -286,7 +286,9 @@ export default function Table({ data = [], loading, columns, reload, page }) {
                 return (
                   <tr
                     key={row.ticket_id}
-                    onClick={() => router.push(`/tickets/${row.ticket_id}`)}
+                    onClick={() =>
+                      window.open(`/tickets/${row.ticket_id}`, "_blank")
+                    }
                     className="border-b border-gray-200 cursor-pointer hover:bg-blue-50 transition"
                   >
                     <td className="px-4 py-3 align-middle">
