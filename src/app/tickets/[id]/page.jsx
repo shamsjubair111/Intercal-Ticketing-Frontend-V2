@@ -25,7 +25,18 @@ import ShowAttachments from "@/components/shared/ShowAttachments";
 import MyModal from "@/components/shared/MyModal";
 import { ChevronLeft, X, Paperclip } from "lucide-react";
 
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+const SIZE_WHITELIST = ["12px", "14px", "16px", "18px", "24px", "32px"];
+
+const ReactQuill = dynamic(
+  async () => {
+    const { default: RQ, Quill } = await import("react-quill-new");
+    const Size = Quill.import("attributors/style/size");
+    Size.whitelist = SIZE_WHITELIST;
+    Quill.register(Size, true);
+    return RQ;
+  },
+  { ssr: false },
+);
 
 const pattern = date.compile("MMM DD YYYY • hh:mm:ss A");
 const safe = (html) => ({ __html: DOMPurify.sanitize(html || "") });
@@ -573,7 +584,7 @@ export default function TicketDetailsPage() {
               <ShowAttachments attachments={ticket.attachments} />
             )}
             <div
-              className="prose prose-base max-w-none text-base break-words [overflow-wrap:anywhere]"
+              className="prose prose-base max-w-none text-base break-words"
               dangerouslySetInnerHTML={safe(ticket?.description)}
             />
           </div>
@@ -593,6 +604,7 @@ export default function TicketDetailsPage() {
                 style={{ height: "180px", overflowY: "auto" }}
                 modules={{
                   toolbar: [
+                    [{ size: SIZE_WHITELIST }],
                     ["bold", "italic", "underline"],
                     ["blockquote"],
                     [{ list: "ordered" }, { list: "bullet" }],
@@ -685,7 +697,7 @@ export default function TicketDetailsPage() {
                     <ShowAttachments attachments={t.attachments} />
                   )}
                   <div
-                    className="prose prose-base max-w-none text-base break-words [overflow-wrap:anywhere]"
+                    className="prose prose-base max-w-none text-base break-words"
                     dangerouslySetInnerHTML={safe(t.contents)}
                   />
                 </div>
