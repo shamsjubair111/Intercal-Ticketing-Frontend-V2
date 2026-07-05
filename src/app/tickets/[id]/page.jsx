@@ -169,7 +169,7 @@ export default function TicketDetailsPage() {
       commenter_department: userData.department,
       commenter_team: userData.team,
       service_type: ticket.service_type,
-      department: ticket.department_email,
+      department_email: ticket.department_email,
       client_email: ticket.client_email,
       secondary_emails: ticket.secondary_emails,
       attachments,
