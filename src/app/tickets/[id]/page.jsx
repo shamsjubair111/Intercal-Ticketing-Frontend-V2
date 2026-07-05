@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
@@ -25,7 +25,9 @@ import ShowAttachments from "@/components/shared/ShowAttachments";
 import MyModal from "@/components/shared/MyModal";
 import { ChevronLeft, X, Paperclip } from "lucide-react";
 
-const SIZE_WHITELIST = ["12px", "14px", "16px", "18px", "24px", "32px"];
+const SIZE_WHITELIST = ["16px", "18px", "24px", "32px"];
+const DEFAULT_SIZE = "16px";
+const EMPTY_16 = `<p><span style="font-size: ${DEFAULT_SIZE};"></span></p>`;
 
 const ReactQuill = dynamic(
   async () => {
@@ -107,7 +109,9 @@ export default function TicketDetailsPage() {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(EMPTY_16);
+  const quillRef = useRef(null);
+  const lastSizeRef = useRef("16px");
   const [isPrivate, setIsPrivate] = useState(true);
   const [files, setFiles] = useState([]);
   const [fileKey, setFileKey] = useState(Date.now());
@@ -148,6 +152,23 @@ export default function TicketDetailsPage() {
   useEffect(() => {
     fetchData();
   }, [id]);
+
+  const handleEditorChange = (value) => {
+    setMessage(value);
+    const editor = quillRef.current?.getEditor?.();
+    if (!editor) return;
+
+    // remember the size currently active at the cursor
+    const current = editor.getFormat();
+    if (current.size) {
+      lastSizeRef.current = current.size;
+    }
+
+    // when the editor is emptied, restore the last used size
+    if (editor.getText().trim().length === 0) {
+      editor.format("size", lastSizeRef.current);
+    }
+  };
 
   const handleReply = async () => {
     const stripped = message.replace(/<[^>]+>/g, "").trim();
@@ -596,9 +617,10 @@ export default function TicketDetailsPage() {
             </h3>
             <div className="mb-14 border border-gray-200 rounded overflow-hidden">
               <ReactQuill
+                ref={quillRef}
                 theme="snow"
                 value={message}
-                onChange={setMessage}
+                onChange={handleEditorChange}
                 placeholder="Type here..."
                 className="bg-white"
                 style={{ height: "180px", overflowY: "auto" }}

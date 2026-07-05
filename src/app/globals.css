@@ -123,7 +123,7 @@
 
 /* Base editor + placeholder size */
 .ql-editor {
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.6;
 }
 .ql-editor.ql-blank::before {
@@ -134,15 +134,10 @@
 .ql-snow .ql-picker.ql-size {
   width: 72px;
 }
-/* default (no size selected) */
-.ql-snow .ql-picker.ql-size .ql-picker-label::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item::before {
-  content: "Normal";
+/* ---- Quill size picker labels ---- */
+.ql-snow .ql-picker.ql-size {
+  width: 72px;
 }
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before { content: "Small (12)"; }
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before { content: "14"; }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before { content: "16"; }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
@@ -151,9 +146,14 @@
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before { content: "24"; }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: "Huge (32)"; }
+
+/* any unselected / empty state → show 16 */
+.ql-snow .ql-picker.ql-size .ql-picker-label:not([data-value])::before,
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=""]::before {
+  content: "16";
+}
+
 /* show each option at its actual size in the dropdown */
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before { font-size: 12px; }
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before { font-size: 14px; }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before { font-size: 16px; }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before { font-size: 18px; }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before { font-size: 24px; }
