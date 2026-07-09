@@ -91,7 +91,7 @@ export default function Filter({ onFilterChange, userType = "", rightAction = nu
           <div className="relative shrink-0">
             <button
               onClick={() => setIsOpen((p) => !p)}
-              className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
             >
               <Plus className="w-4 h-4" /> Add filter
             </button>
