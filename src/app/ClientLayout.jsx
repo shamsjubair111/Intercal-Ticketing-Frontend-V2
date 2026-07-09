@@ -40,7 +40,7 @@ function SidebarLayout({ children }) {
             />
           )}
           <aside
-            className={`fixed md:static inset-y-0 left-0 z-40 w-64 border-r border-gray-200 bg-white overflow-y-auto transform transition-transform duration-300 ease-in-out md:transform-none ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+            className={`fixed md:static inset-y-0 left-0 z-40 w-56 border-r border-gray-200 bg-white overflow-y-auto transform transition-transform duration-300 ease-in-out md:transform-none ${open ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
             style={{ top: "4rem" }}
           >
             <Sidebar onNavigate={() => setOpen(false)} />
