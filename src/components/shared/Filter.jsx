@@ -27,7 +27,7 @@ const ALL_FILTERS = [
   { id: 7, label: "Company Name", type: "text", searchKey: "client_companies" },
 ];
 
-export default function Filter({ onFilterChange, userType = "" }) {
+export default function Filter({ onFilterChange, userType = "", rightAction = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState([]);
   const internalUpdate = useRef(false);
@@ -86,85 +86,89 @@ export default function Filter({ onFilterChange, userType = "" }) {
 
   return (
     <div className="w-full bg-white rounded-sm border border-gray-200">
-      <div className="flex items-center py-3 pl-4 pr-4">
-        <div className="relative">
-          <button
-            onClick={() => setIsOpen((p) => !p)}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" /> Add filter
-          </button>
-          {isOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20">
-              {visibleFilters.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => add(opt)}
-                  disabled={selected.some((f) => f.id === opt.id)}
-                  className="w-full cursor-pointer text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+      <div className="flex flex-col gap-3 py-3 px-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setIsOpen((p) => !p)}
+              className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" /> Add filter
+            </button>
+            {isOpen && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-30">
+                {visibleFilters.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => add(opt)}
+                    disabled={selected.some((f) => f.id === opt.id)}
+                    className="w-full cursor-pointer text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {selected.length > 0 && (
+            <div className="flex min-w-0 flex-1 gap-3 overflow-x-auto whitespace-nowrap px-1 py-1">
+              {selected.map((f) => (
+                <div
+                  key={f.id}
+                  className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs"
                 >
-                  {opt.label}
-                </button>
+                  <span className="text-sm text-gray-700 font-medium">
+                    {f.label}:
+                  </span>
+
+                  {f.type === "select" && (
+                    <select
+                      value={f.value}
+                      onChange={(e) => change(f.id, e.target.value)}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm cursor-pointer"
+                    >
+                      <option value="">Select</option>
+                      {f.options.map((o) => (
+                        <option key={o} value={o}>
+                          {o}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  {f.type === "date" && (
+                    <input
+                      type="date"
+                      value={f.value}
+                      onChange={(e) => change(f.id, e.target.value)}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm cursor-pointer"
+                    />
+                  )}
+
+                  {f.type === "text" && (
+                    <input
+                      type="text"
+                      value={f.value}
+                      onChange={(e) => change(f.id, e.target.value)}
+                      placeholder={`Enter ${f.label.toLowerCase()}...`}
+                      className="border border-gray-300 rounded-md px-2 py-1 text-sm w-36"
+                    />
+                  )}
+
+                  <button
+                    onClick={() => remove(f.id)}
+                    className="cursor-pointer text-gray-400 hover:text-red-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               ))}
             </div>
           )}
         </div>
 
-        {selected.length > 0 && (
-          <div className="ml-4 flex gap-3 overflow-x-auto whitespace-nowrap px-2 py-1 max-w-full">
-            {selected.map((f) => (
-              <div
-                key={f.id}
-                className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs"
-              >
-                <span className="text-sm text-gray-700 font-medium">
-                  {f.label}:
-                </span>
-
-                {f.type === "select" && (
-                  <select
-                    value={f.value}
-                    onChange={(e) => change(f.id, e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm cursor-pointer"
-                  >
-                    <option value="">Select</option>
-                    {f.options.map((o) => (
-                      <option key={o} value={o}>
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                )}
-
-                {f.type === "date" && (
-                  <input
-                    type="date"
-                    value={f.value}
-                    onChange={(e) => change(f.id, e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm cursor-pointer"
-                  />
-                )}
-
-                {f.type === "text" && (
-                  <input
-                    type="text"
-                    value={f.value}
-                    onChange={(e) => change(f.id, e.target.value)}
-                    placeholder={`Enter ${f.label.toLowerCase()}...`}
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm w-36"
-                  />
-                )}
-
-                <button
-                  onClick={() => remove(f.id)}
-                  className="cursor-pointer text-gray-400 hover:text-red-500"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+        {rightAction && <div className="shrink-0 self-start lg:self-auto">{rightAction}</div>}
       </div>
     </div>
   );
