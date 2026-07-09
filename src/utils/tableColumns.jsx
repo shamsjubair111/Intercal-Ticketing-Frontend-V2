@@ -16,7 +16,7 @@ export const ticketColumns = [
     ),
   },
   {
-    label: "REQUESTER",
+    label: "REQUESTER NAME",
     value: "client_name",
     className: "min-w-[220px] max-w-[260px]",
     render: (row) => (
