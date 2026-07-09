@@ -7,7 +7,6 @@ import {
   MoreVertical,
   ExternalLink,
   Check,
-  SlidersHorizontal,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import MyModal from "@/components/shared/MyModal";
@@ -19,10 +18,16 @@ import {
   dropTicket,
 } from "@/api/tickets";
 
-const TABLE_COLUMN_STORAGE_KEY = "ticket_table_visible_columns";
 const PRIORITY_COLUMN_LABELS = new Set(["CLIENT COMPANY", "REQUESTER NAME"]);
 
-export default function Table({ data = [], loading, columns, reload, page }) {
+export default function Table({
+  data = [],
+  loading,
+  columns,
+  reload,
+  page,
+  visibleColumnLabels,
+}) {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [trashTicketId, setTrashTicketId] = useState(null);
   const [trashLoading, setTrashLoading] = useState(false);
@@ -33,12 +38,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
   const [dropLoading, setDropLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [openActionRow, setOpenActionRow] = useState(null);
-  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
-  const [visibleColumnLabels, setVisibleColumnLabels] = useState(() =>
-    columns.map((c) => c.label),
-  );
   const actionMenuRef = useRef(null);
-  const columnMenuRef = useRef(null);
   const router = useRouter();
   const { setAlertCtx } = useContext(alertContext);
 
@@ -49,35 +49,9 @@ export default function Table({ data = [], loading, columns, reload, page }) {
   }, []);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(TABLE_COLUMN_STORAGE_KEY);
-      if (!saved) return;
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed)) {
-        const valid = parsed.filter((label) =>
-          columns.some((col) => col.label === label),
-        );
-        if (valid.length) setVisibleColumnLabels(valid);
-      }
-    } catch {
-      localStorage.removeItem(TABLE_COLUMN_STORAGE_KEY);
-    }
-  }, [columns]);
-
-  useEffect(() => {
-    localStorage.setItem(
-      TABLE_COLUMN_STORAGE_KEY,
-      JSON.stringify(visibleColumnLabels),
-    );
-  }, [visibleColumnLabels]);
-
-  useEffect(() => {
     function handleOutsideClick(e) {
       if (actionMenuRef.current && !actionMenuRef.current.contains(e.target)) {
         setOpenActionRow(null);
-      }
-      if (columnMenuRef.current && !columnMenuRef.current.contains(e.target)) {
-        setColumnMenuOpen(false);
       }
     }
 
@@ -89,7 +63,7 @@ export default function Table({ data = [], loading, columns, reload, page }) {
   const canSeeActions = userType !== "client";
 
   const visibleColumns = useMemo(() => {
-    const selected = new Set(visibleColumnLabels);
+    const selected = new Set(visibleColumnLabels || columns.map((c) => c.label));
     return columns
       .filter((col) => selected.has(col.label))
       .sort((a, b) => {
@@ -98,17 +72,6 @@ export default function Table({ data = [], loading, columns, reload, page }) {
         return ap - bp;
       });
   }, [columns, visibleColumnLabels]);
-
-  const toggleColumn = (label) => {
-    const isSelected = visibleColumnLabels.includes(label);
-    if (isSelected && visibleColumnLabels.length === 1) return;
-
-    setVisibleColumnLabels((prev) =>
-      isSelected ? prev.filter((item) => item !== label) : [...prev, label],
-    );
-  };
-
-  const resetColumns = () => setVisibleColumnLabels(columns.map((c) => c.label));
 
   const getColumnClassName = (col) => {
     if (col.label === "CLIENT COMPANY") return "min-w-[220px] w-[240px]";
@@ -315,60 +278,6 @@ export default function Table({ data = [], loading, columns, reload, page }) {
           </div>
         </div>
       )}
-
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-gray-500">
-          Showing <span className="font-semibold text-gray-700">{visibleColumns.length}</span> of{" "}
-          <span className="font-semibold text-gray-700">{columns.length}</span> columns
-        </p>
-        <div className="relative self-start sm:self-auto" ref={columnMenuRef}>
-          <button
-            onClick={() => setColumnMenuOpen((p) => !p)}
-            className="inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <SlidersHorizontal className="h-4 w-4" /> Columns
-          </button>
-          {columnMenuOpen && (
-            <div className="absolute right-auto sm:right-0 z-30 mt-2 w-64 rounded-md border border-gray-200 bg-white p-3 shadow-lg">
-              <div className="mb-2 flex items-center justify-between border-b border-gray-100 pb-2">
-                <p className="text-sm font-semibold text-gray-700">Visible columns</p>
-                <button
-                  onClick={resetColumns}
-                  className="text-xs font-medium text-blue-600 hover:underline"
-                >
-                  Reset
-                </button>
-              </div>
-              <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
-                {columns.map((col) => {
-                  const checked = visibleColumnLabels.includes(col.label);
-                  const disabled = checked && visibleColumnLabels.length === 1;
-                  return (
-                    <label
-                      key={col.label}
-                      className={`flex items-center gap-2 rounded px-2 py-1 text-sm ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-gray-50"}`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        disabled={disabled}
-                        onChange={() => toggleColumn(col.label)}
-                        className="accent-blue-600"
-                      />
-                      <span className="flex-1 text-gray-700">{col.label}</span>
-                      {PRIORITY_COLUMN_LABELS.has(col.label) && (
-                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700">
-                          Priority
-                        </span>
-                      )}
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
       <div className="w-full bg-white rounded-sm border border-gray-200 overflow-x-auto">
         <table className="w-full min-w-[760px] table-auto">
